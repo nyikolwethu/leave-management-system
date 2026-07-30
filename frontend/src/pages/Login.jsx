@@ -1,31 +1,37 @@
+import "./Login.css";
 import Button from "../components/Button/Button";
 
 function Login() {
   return (
-    <div>
-      <h1>Leave Management System</h1>
+    <div className="login-page">
+      <div className="login-card">
+        <h1>🌸 Leave Management System</h1>
 
-      <h2>Login</h2>
+        <p className="subtitle">
+          Welcome Back
+        </p>
 
-      <form>
-        <div>
+        <form>
           <label>Email</label>
-          <br />
-          <input type="email" placeholder="Enter your email" />
-        </div>
 
-        <br />
+          <input
+            type="email"
+            placeholder="Enter your email"
+          />
 
-        <div>
           <label>Password</label>
-          <br />
-          <input type="password" placeholder="Enter your password" />
-        </div>
 
-        <br />
+          <input
+            type="password"
+            placeholder="Enter your password"
+          />
 
-      <Button text="Sign In" type="submit" />
-      </form>
+          <Button
+            text="Sign In"
+            type="submit"
+          />
+        </form>
+      </div>
     </div>
   );
 }
