@@ -1,3 +1,5 @@
+import Button from "../components/Button/Button";
+
 function Login() {
   return (
     <div>
@@ -22,7 +24,7 @@ function Login() {
 
         <br />
 
-        <button type="submit">Sign In</button>
+      <Button text="Sign In" type="submit" />
       </form>
     </div>
   );
