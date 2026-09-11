@@ -1,3 +1,4 @@
+
 import "./Button.css";
 
 function Button({ text, type = "button", onClick }) {
