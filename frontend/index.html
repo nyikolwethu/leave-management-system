@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Leave Management</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <h1>Leave Management</h1>
+    <div id="userInfo" class="user-info hidden">
+      <span id="userName"></span>
+      <button id="logoutBtn">Log out</button>
+    </div>
+  </header>
+
+  <!-- Login view -->
+  <section id="loginView" class="view">
+    <div class="card login-card">
+      <h2>Sign in</h2>
+      <p class="muted">Use your work email and password.</p>
+      <label>Email <input type="email" id="loginEmail" /></label>
+      <label>Password <input type="password" id="loginPassword" /></label>
+      <button id="loginBtn">Sign in</button>
+      <p id="loginError" class="error hidden"></p>
+    </div>
+  </section>
+
+  <!-- App view -->
+  <main id="appView" class="view hidden">
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="dashboard">Dashboard</button>
+      <button class="tab-btn" data-tab="submit">Submit Leave</button>
+      <button class="tab-btn" data-tab="history">My Requests</button>
+      <button class="tab-btn manager-only hidden" data-tab="inbox">Manager Inbox</button>
+    </nav>
+
+    <section id="dashboard" class="tab-panel">
+      <h2>Leave Balance</h2>
+      <div id="balanceCards" class="card-grid"></div>
+    </section>
+
+    <section id="submit" class="tab-panel hidden">
+      <h2>Submit Leave Request</h2>
+      <div class="card">
+        <label>Leave type
+          <select id="leaveType">
+            <option value="ANNUAL">Annual</option>
+            <option value="SICK">Sick</option>
+            <option value="UNPAID">Unpaid</option>
+          </select>
+        </label>
+        <label>Start date <input type="date" id="startDate" /></label>
+        <label>End date <input type="date" id="endDate" /></label>
+        <label>Reason <textarea id="reason" rows="3"></textarea></label>
+        <button id="submitLeaveBtn">Submit request</button>
+        <p id="submitMessage" class="hidden"></p>
+      </div>
+    </section>
+
+    <section id="history" class="tab-panel hidden">
+      <h2>My Requests</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Status</th><th>Submitted</th></tr>
+        </thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </section>
+
+    <section id="inbox" class="tab-panel hidden">
+      <h2>Pending Approvals</h2>
+      <table class="data-table">
+        <thead>
+          <tr><th>Employee</th><th>Type</th><th>Start</th><th>End</th><th>Days</th><th>Reason</th><th>Action</th></tr>
+        </thead>
+        <tbody id="inboxBody"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
