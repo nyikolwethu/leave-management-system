@@ -1,0 +1,259 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Serverless Leave Management System — Lambda, API Gateway, DynamoDB,
+  Cognito, and SES. Designed to run within the AWS Free Tier.
+
+Parameters:
+  SenderEmail:
+    Type: String
+    Description: SES-verified sender address for notification emails
+    Default: leave-system@yourcompany.com
+  StageName:
+    Type: String
+    Default: prod
+
+Globals:
+  Function:
+    Runtime: python3.12
+    Timeout: 10
+    MemorySize: 128
+    Environment:
+      Variables:
+        LEAVE_REQUESTS_TABLE: !Ref LeaveRequestsTable
+        EMPLOYEES_TABLE: !Ref EmployeesTable
+        SENDER_EMAIL: !Ref SenderEmail
+
+Resources:
+
+  # ---------------- DynamoDB ----------------
+  EmployeesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: Employees
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: employeeId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: employeeId
+          KeyType: HASH
+
+  LeaveRequestsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: LeaveRequests
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: requestId
+          AttributeType: S
+        - AttributeName: employeeId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: requestId
+          KeyType: HASH
+        - AttributeName: employeeId
+          KeyType: RANGE
+
+  # ---------------- Cognito ----------------
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: leave-mgmt-user-pool
+      AutoVerifiedAttributes: [email]
+      UsernameAttributes: [email]
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: leave-mgmt-web
+      UserPoolId: !Ref UserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+
+  EmployeesGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Employees
+      UserPoolId: !Ref UserPool
+      Description: Standard employee permissions
+
+  ManagersGroup:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      GroupName: Managers
+      UserPoolId: !Ref UserPool
+      Description: Manager permissions (approve/reject, view team requests)
+
+  # ---------------- API Gateway ----------------
+  LeaveApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: !Ref StageName
+      Cors:
+        AllowMethods: "'GET,POST,PUT,OPTIONS'"
+        AllowHeaders: "'Content-Type,Authorization'"
+        AllowOrigin: "'*'"
+      Auth:
+        DefaultAuthorizer: CognitoAuthorizer
+        Authorizers:
+          CognitoAuthorizer:
+            UserPoolArn: !GetAtt UserPool.Arn
+
+  # ---------------- Lambda Functions ----------------
+  SubmitLeaveFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: submitLeave
+      CodeUri: functions/submitLeave/
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LeaveRequestsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - SESCrudPolicy:
+            IdentityName: !Ref SenderEmail
+      Events:
+        SubmitLeave:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LeaveApi
+            Path: /leave
+            Method: POST
+
+  ApproveRejectLeaveFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: approveRejectLeave
+      CodeUri: functions/approveRejectLeave/
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref LeaveRequestsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref EmployeesTable
+        - SESCrudPolicy:
+            IdentityName: !Ref SenderEmail
+      Events:
+        ApproveRejectLeave:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LeaveApi
+            Path: /leave/{requestId}
+            Method: PUT
+
+  GetLeaveBalanceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getLeaveBalance
+      CodeUri: functions/getLeaveBalance/
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+      Events:
+        GetLeaveBalance:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LeaveApi
+            Path: /employee/{id}/balance
+            Method: GET
+
+  GetLeaveHistoryFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getLeaveHistory
+      CodeUri: functions/getLeaveHistory/
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref LeaveRequestsTable
+      Events:
+        GetLeaveHistory:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LeaveApi
+            Path: /employee/{id}/history
+            Method: GET
+
+  GetPendingRequestsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: getPendingRequests
+      CodeUri: functions/getPendingRequests/
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref LeaveRequestsTable
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+      Events:
+        GetPendingRequests:
+          Type: Api
+          Properties:
+            RestApiId: !Ref LeaveApi
+            Path: /manager/{id}/pending
+            Method: GET
+
+  LowBalanceCheckFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: lowBalanceCheck
+      CodeUri: functions/lowBalanceCheck/
+      Handler: app.lambda_handler
+      Policies:
+        - DynamoDBReadPolicy:
+            TableName: !Ref EmployeesTable
+        - SESCrudPolicy:
+            IdentityName: !Ref SenderEmail
+      Events:
+        WeeklySchedule:
+          Type: Schedule
+          Properties:
+            Schedule: rate(7 days)
+            Description: Weekly check for employees with low leave balances
+
+  # ---------------- Frontend Hosting ----------------
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'leave-mgmt-frontend-${AWS::AccountId}'
+      WebsiteConfiguration:
+        IndexDocument: index.html
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: '*'
+            Action: 's3:GetObject'
+            Resource: !Sub '${FrontendBucket.Arn}/*'
+
+Outputs:
+  ApiUrl:
+    Description: Base URL for the API Gateway stage
+    Value: !Sub 'https://${LeaveApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
+  UserPoolId:
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Value: !Ref UserPoolClient
+  FrontendUrl:
+    Value: !GetAtt FrontendBucket.WebsiteURL
