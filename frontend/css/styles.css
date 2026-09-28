@@ -1,186 +1,460 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 :root {
-  --primary: #0b3d2b;
-  --primary-dark: #002417;
-  --text: #2b2225;
-  --muted: #7d6a70;
-  --success: #1f6f4a;
-  --danger: #a23a4d;
-  --pending: #b26a00;
-  --glass: rgba(255, 255, 255, 0.55);
-  --glass-border: rgba(255, 255, 255, 0.7);
+  --primary: #29281E;        /* Green Velvet */
+  --primary-dark: #101211;   /* Carbon Powder */
+
+  --text: #101211;           /* Carbon Powder */
+  --muted: #857861;          /* Golden Sand */
+
+  --success: #29281E;        /* Green Velvet */
+  --danger: #48252F;         /* Plum Wine */
+  --pending: #857861;        /* Golden Sand */
+
+  --glass: rgba(231, 212, 187, 0.62);
+  --glass-border: rgba(255, 255, 255, 0.60);
+
+  --background: #E7D4BB;     /* Almond Light */
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
   margin: 0;
   min-height: 100vh;
+
   font-family: 'Poppins', 'Helvetica Neue', Arial, sans-serif;
+
   color: var(--text);
-  background: linear-gradient(180deg, #d9788a 0%, #eaa2b0 45%, #f7d3d9 100%) fixed;
+
+  background:
+    linear-gradient(
+      180deg,
+      #857861 0%,
+      #E7D4BB 48%,
+      #E7D4BB 100%
+    ) fixed;
 }
 
-/* soft pink sphere in the background */
+/* Soft decorative background shape */
 body::before {
   content: '';
+
   position: fixed;
+
   right: -120px;
   bottom: -160px;
+
   width: 520px;
   height: 520px;
+
   border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffd9df, #f08fa3 70%);
-  opacity: 0.55;
+
+  background:
+    radial-gradient(
+      circle at 35% 35%,
+      #E7D4BB,
+      #48252F 75%
+    );
+
+  opacity: 0.35;
+
   z-index: -1;
+
   pointer-events: none;
 }
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
+
+/* ================================
+   TOP BAR
+================================ */
 
 .topbar {
   display: flex;
+
   justify-content: space-between;
   align-items: center;
+
   padding: 14px 28px;
+
   background: var(--glass);
+
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
+
   border-bottom: 1px solid var(--glass-border);
 }
 
 .topbar h1 {
   margin: 0;
+
   font-size: 20px;
   font-weight: 600;
+
   letter-spacing: 0.3px;
+
   color: var(--primary-dark);
 }
 
-.user-info { display: flex; align-items: center; gap: 12px; font-size: 14px; }
+.user-info {
+  display: flex;
 
-.view { padding: 28px; max-width: 960px; margin: 0 auto; }
+  align-items: center;
+
+  gap: 12px;
+
+  font-size: 14px;
+}
+
+/* ================================
+   MAIN VIEW
+================================ */
+
+.view {
+  padding: 28px;
+
+  max-width: 960px;
+
+  margin: 0 auto;
+}
+
+/* ================================
+   CARDS
+================================ */
 
 .card {
   background: var(--glass);
+
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+
   border: 1px solid var(--glass-border);
+
   border-radius: 24px;
+
   padding: 26px;
+
   max-width: 440px;
-  box-shadow: 0 10px 30px rgba(122, 72, 84, 0.18);
+
+  box-shadow:
+    0 10px 30px rgba(72, 37, 47, 0.18);
 }
 
-.login-card { margin: 60px auto; }
+.login-card {
+  margin: 60px auto;
+}
 
-h2 { font-weight: 600; margin-top: 0; }
+/* ================================
+   HEADINGS
+================================ */
+
+h2 {
+  font-weight: 600;
+
+  margin-top: 0;
+
+  color: var(--primary-dark);
+}
+
+/* ================================
+   FORM LABELS
+================================ */
 
 label {
   display: block;
+
   margin-bottom: 14px;
+
   font-size: 13px;
+
   color: var(--muted);
 }
 
-input, select, textarea {
+/* ================================
+   FORM INPUTS
+================================ */
+
+input,
+select,
+textarea {
   width: 100%;
+
   padding: 11px 14px;
+
   margin-top: 5px;
+
   border: 1px solid rgba(255, 255, 255, 0.8);
+
   border-radius: 16px;
+
   background: rgba(255, 255, 255, 0.75);
+
   font-size: 14px;
+
   font-family: inherit;
+
   color: var(--text);
 }
 
-input:focus, select:focus, textarea:focus {
+input:focus,
+select:focus,
+textarea:focus {
   outline: 2px solid var(--primary);
+
   outline-offset: 1px;
 }
 
+/* ================================
+   BUTTONS
+================================ */
+
 button {
   background: var(--primary);
-  color: #fff;
+
+  color: #E7D4BB;
+
   border: none;
+
   padding: 11px 22px;
+
   border-radius: 999px;
+
   font-size: 14px;
+
   font-family: inherit;
+
   font-weight: 500;
+
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s;
+
+  transition:
+    background 0.15s ease,
+    transform 0.1s ease;
 }
 
-button:hover { background: var(--primary-dark); }
-button:active { transform: scale(0.98); }
+button:hover {
+  background: var(--primary-dark);
+}
 
-.tabs { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+button:active {
+  transform: scale(0.98);
+}
+
+/* ================================
+   TABS
+================================ */
+
+.tabs {
+  display: flex;
+
+  gap: 8px;
+
+  margin-bottom: 24px;
+
+  flex-wrap: wrap;
+}
 
 .tab-btn {
   background: rgba(255, 255, 255, 0.45);
+
   color: var(--text);
+
   padding: 9px 20px;
+
   border: 1px solid var(--glass-border);
 }
 
-.tab-btn:hover { background: rgba(255, 255, 255, 0.75); color: var(--primary-dark); }
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.75);
 
-.tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+  color: var(--primary-dark);
+}
+
+.tab-btn.active {
+  background: var(--primary);
+
+  color: #E7D4BB;
+
+  border-color: var(--primary);
+}
+
+/* ================================
+   CARD GRID
+================================ */
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+
+  grid-template-columns:
+    repeat(auto-fit, minmax(170px, 1fr));
+
   gap: 16px;
 }
 
+/* ================================
+   BALANCE CARDS
+================================ */
+
 .balance-card {
   background: var(--glass);
+
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+
   border: 1px solid var(--glass-border);
+
   border-radius: 24px;
+
   padding: 22px;
+
   text-align: center;
-  box-shadow: 0 10px 30px rgba(122, 72, 84, 0.15);
+
+  box-shadow:
+    0 10px 30px rgba(72, 37, 47, 0.15);
 }
 
-.balance-card .num { font-size: 38px; font-weight: 600; color: var(--success); }
-.balance-card .label { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+.balance-card .num {
+  font-size: 38px;
+
+  font-weight: 600;
+
+  color: var(--success);
+}
+
+.balance-card .label {
+  color: var(--muted);
+
+  font-size: 12px;
+
+  text-transform: uppercase;
+
+  letter-spacing: 1px;
+}
+
+/* ================================
+   DATA TABLE
+================================ */
 
 .data-table {
   width: 100%;
+
   border-collapse: separate;
+
   border-spacing: 0;
-  background: rgba(255, 255, 255, 0.7);
+
+  background: rgba(255, 255, 255, 0.70);
+
   border: 1px solid var(--glass-border);
+
   border-radius: 20px;
+
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(122, 72, 84, 0.15);
+
+  box-shadow:
+    0 10px 30px rgba(72, 37, 47, 0.15);
 }
 
-.data-table th, .data-table td {
+.data-table th,
+.data-table td {
   padding: 12px 14px;
+
   text-align: left;
-  border-bottom: 1px solid rgba(217, 120, 138, 0.2);
+
+  border-bottom:
+    1px solid rgba(133, 120, 97, 0.20);
+
   font-size: 14px;
 }
 
-.data-table th { background: rgba(217, 120, 138, 0.18); color: var(--primary-dark); font-weight: 600; }
-.data-table tr:last-child td { border-bottom: none; }
+.data-table th {
+  background: rgba(133, 120, 97, 0.18);
 
-.status-pending { color: var(--pending); font-weight: 600; }
-.status-approved { color: var(--success); font-weight: 600; }
-.status-rejected { color: var(--danger); font-weight: 600; }
+  color: var(--primary-dark);
 
-.error { color: var(--danger); font-size: 13px; }
-.success-msg { color: var(--success); font-size: 13px; }
-.muted { color: var(--muted); font-size: 13px; }
+  font-weight: 600;
+}
 
-.action-btn { margin-right: 6px; padding: 7px 14px; font-size: 12px; }
-.approve-btn { background: var(--success); }
-.approve-btn:hover { background: #17563a; }
-.reject-btn { background: var(--danger); }
-.reject-btn:hover { background: #82293a; }
+.data-table tr:last-child td {
+  border-bottom: none;
+}
+
+/* ================================
+   STATUS
+================================ */
+
+.status-pending {
+  color: var(--pending);
+
+  font-weight: 600;
+}
+
+.status-approved {
+  color: var(--success);
+
+  font-weight: 600;
+}
+
+.status-rejected {
+  color: var(--danger);
+
+  font-weight: 600;
+}
+
+/* ================================
+   MESSAGES
+================================ */
+
+.error {
+  color: var(--danger);
+
+  font-size: 13px;
+}
+
+.success-msg {
+  color: var(--success);
+
+  font-size: 13px;
+}
+
+.muted {
+  color: var(--muted);
+
+  font-size: 13px;
+}
+
+/* ================================
+   ACTION BUTTONS
+================================ */
+
+.action-btn {
+  margin-right: 6px;
+
+  padding: 7px 14px;
+
+  font-size: 12px;
+}
+
+.approve-btn {
+  background: var(--success);
+
+  color: #E7D4BB;
+}
+
+.approve-btn:hover {
+  background: #101211;
+}
+
+.reject-btn {
+  background: var(--danger);
+
+  color: #E7D4BB;
+}
+
+.reject-btn:hover {
+  background: #29281E;
+}
