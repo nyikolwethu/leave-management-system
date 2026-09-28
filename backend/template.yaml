@@ -30,7 +30,7 @@ Resources:
   EmployeesTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: Employees
+      TableName: leave-mgmt-Employees
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: employeeId
@@ -42,7 +42,7 @@ Resources:
   LeaveRequestsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: LeaveRequests
+      TableName: leave-mgmt-LeaveRequests
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: requestId
@@ -103,6 +103,17 @@ Resources:
         AllowMethods: "'GET,POST,PUT,OPTIONS'"
         AllowHeaders: "'Content-Type,Authorization'"
         AllowOrigin: "'*'"
+      GatewayResponses:
+        DEFAULT_4XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
+        DEFAULT_5XX:
+          ResponseParameters:
+            Headers:
+              Access-Control-Allow-Origin: "'*'"
+              Access-Control-Allow-Headers: "'Content-Type,Authorization'"
       Auth:
         DefaultAuthorizer: CognitoAuthorizer
         Authorizers:
@@ -113,7 +124,7 @@ Resources:
   SubmitLeaveFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: submitLeave
+      FunctionName: leave-mgmt-submitLeave
       CodeUri: functions/submitLeave/
       Handler: app.lambda_handler
       Policies:
@@ -134,7 +145,7 @@ Resources:
   ApproveRejectLeaveFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: approveRejectLeave
+      FunctionName: leave-mgmt-approveRejectLeave
       CodeUri: functions/approveRejectLeave/
       Handler: app.lambda_handler
       Policies:
@@ -155,7 +166,7 @@ Resources:
   GetLeaveBalanceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: getLeaveBalance
+      FunctionName: leave-mgmt-getLeaveBalance
       CodeUri: functions/getLeaveBalance/
       Handler: app.lambda_handler
       Policies:
@@ -172,7 +183,7 @@ Resources:
   GetLeaveHistoryFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: getLeaveHistory
+      FunctionName: leave-mgmt-getLeaveHistory
       CodeUri: functions/getLeaveHistory/
       Handler: app.lambda_handler
       Policies:
@@ -189,7 +200,7 @@ Resources:
   GetPendingRequestsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: getPendingRequests
+      FunctionName: leave-mgmt-getPendingRequests
       CodeUri: functions/getPendingRequests/
       Handler: app.lambda_handler
       Policies:
@@ -208,7 +219,7 @@ Resources:
   LowBalanceCheckFunction:
     Type: AWS::Serverless::Function
     Properties:
-      FunctionName: lowBalanceCheck
+      FunctionName: leave-mgmt-lowBalanceCheck
       CodeUri: functions/lowBalanceCheck/
       Handler: app.lambda_handler
       Policies:

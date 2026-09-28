@@ -1,0 +1,12 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "leave-mgmt"
+resolve_s3 = true
+s3_prefix = "leave-mgmt"
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "SenderEmail=\"sara.lwethu@gmail.com\" StageName=\"prod\""
+image_repositories = []
+
+[default.global.parameters]
+region = "us-east-1"
