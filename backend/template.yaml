@@ -116,9 +116,9 @@ Resources:
               Access-Control-Allow-Headers: "'Content-Type,Authorization'"
       Auth:
         DefaultAuthorizer: CognitoAuthorizer
+        AddDefaultAuthorizerToCorsPreflight: false
         Authorizers:
-          CognitoAuthorizer:
-            UserPoolArn: !GetAtt UserPool.Arn
+        
 
   # ---------------- Lambda Functions ----------------
   SubmitLeaveFunction:
@@ -230,41 +230,3 @@ Resources:
       Events:
         WeeklySchedule:
           Type: Schedule
-          Properties:
-            Schedule: rate(7 days)
-            Description: Weekly check for employees with low leave balances
-
-  # ---------------- Frontend Hosting ----------------
-  FrontendBucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub 'leave-mgmt-frontend-${AWS::AccountId}'
-      WebsiteConfiguration:
-        IndexDocument: index.html
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        BlockPublicPolicy: false
-        IgnorePublicAcls: false
-        RestrictPublicBuckets: false
-
-  FrontendBucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket: !Ref FrontendBucket
-      PolicyDocument:
-        Statement:
-          - Effect: Allow
-            Principal: '*'
-            Action: 's3:GetObject'
-            Resource: !Sub '${FrontendBucket.Arn}/*'
-
-Outputs:
-  ApiUrl:
-    Description: Base URL for the API Gateway stage
-    Value: !Sub 'https://${LeaveApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}'
-  UserPoolId:
-    Value: !Ref UserPool
-  UserPoolClientId:
-    Value: !Ref UserPoolClient
-  FrontendUrl:
-    Value: !GetAtt FrontendBucket.WebsiteURL
